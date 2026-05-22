@@ -7,6 +7,10 @@ import { bunny } from 'laravel-vite-plugin/fonts';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    ssr: {
+        noExternal: [],
+        external: ['sonner'],
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
@@ -17,7 +21,7 @@ export default defineConfig({
                 }),
             ],
         }),
-        inertia(),
+        inertia({ ssr: false }),
         react({
             babel: {
                 plugins: ['babel-plugin-react-compiler'],
@@ -26,6 +30,17 @@ export default defineConfig({
         tailwindcss(),
         wayfinder({
             formVariants: true,
+            command: "echo 'wayfinder: run php artisan wayfinder:generate manually'",
         }),
+        
+
+    
     ],
+     server: {
+        host: '0.0.0.0',       // écoute sur toutes les interfaces Docker
+        port: 5173,
+        hmr: {
+            host: 'localhost', // le navigateur contacte localhost:5173
+        },
+    },
 });
