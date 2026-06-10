@@ -171,15 +171,58 @@ Auth pages (already exist via Fortify):
 
 ---
 
+## Architecture — Service Layer Pattern
+
+**The rule:** Controllers are thin. Services hold all business logic.
+
+```
+Request → Controller → Service → Model → Database
+```
+
+| Layer | Responsibility | Location |
+|---|---|---|
+| Controller | Receive request, call service, return Inertia response | `app/Http/Controllers/` |
+| Form Request | Validate input | `app/Http/Requests/` |
+| Service | Business logic (create car, upload images, search...) | `app/Services/` |
+| Model | Eloquent relations, scopes, casts | `app/Models/` |
+| Policy | Authorization (can this user edit this car?) | `app/Policies/` |
+
+**Example — storing a listing:**
+```php
+// CarController.php — thin, no logic
+public function store(StoreCarRequest $request): RedirectResponse
+{
+    $car = $this->carService->create($request->validated(), $request->user());
+    return redirect()->route('cars.show', $car);
+}
+
+// CarService.php — all the logic
+public function create(array $data, User $seller): Car
+{
+    $car = $seller->cars()->create($data);
+    // handle images, notifications, etc.
+    return $car;
+}
+```
+
+**Services to create:**
+- `CarService` — create, update, delete, mark as sold
+- `CarImageService` — upload, reorder, delete images
+- `CarSearchService` — filter/search logic (keep DB queries out of controllers)
+
+---
+
 ## Coding Conventions
 
 ### PHP / Laravel
 - Models live in `app/Models/`
-- Controllers in `app/Http/Controllers/` — use resource controllers when applicable
+- Controllers in `app/Http/Controllers/` — resource controllers, **no business logic**
+- Services in `app/Services/` — one service per domain (Car, Image, Search)
 - Form Requests for validation (`app/Http/Requests/`)
 - Policies for authorization (`app/Policies/`) — never check `auth()->id() === $car->user_id` inline
 - Use PHP 8.4 attribute syntax for `#[Fillable]` and `#[Hidden]` (already used in `User` model)
 - Enums for `fuel_type`, `body_type`, `transmission`, `status` — define in `app/Enums/`
+- Inject services via constructor in controllers (not `new CarService()` inline)
 
 ### TypeScript / React
 - Pages in `resources/js/pages/` — one file per route, PascalCase
@@ -232,20 +275,26 @@ APP_URL=http://localhost   # port 8080 via nginx
 ```
 autodive/
 ├── app/
-│   ├── Enums/              # FuelType, BodyType, CarStatus (to create)
+│   ├── Enums/              # FuelType, BodyType, Transmission, CarCondition, CarStatus
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   │   ├── CarController.php       (to create)
+│   │   │   ├── CarController.php       (thin — calls CarService)
+│   │   │   ├── FavoriteController.php
 │   │   │   └── Settings/
 │   │   └── Middleware/
 │   │       └── HandleInertiaRequests.php
+│   ├── Services/           # ALL business logic lives here
+│   │   ├── CarService.php
+│   │   ├── CarImageService.php
+│   │   └── CarSearchService.php
 │   ├── Models/
 │   │   ├── User.php
-│   │   ├── Car.php                     (to create)
-│   │   ├── Make.php                    (to create)
-│   │   └── CarImage.php                (to create)
+│   │   ├── Car.php
+│   │   ├── Make.php
+│   │   ├── CarModel.php    (named CarModel to avoid conflict with Eloquent Model class)
+│   │   └── CarImage.php
 │   └── Policies/
-│       └── CarPolicy.php               (to create)
+│       └── CarPolicy.php
 ├── database/
 │   ├── migrations/
 │   └── seeders/
