@@ -4,7 +4,11 @@ import { Car, Make } from '@/types';
 import CarCard from '@/components/CarCard';
 import cars from '@/routes/cars';
 import { login, register } from '@/routes';
-import {  CarFront } from "lucide-react";
+import {
+    CarFront, Truck, Car as CarIcon, Zap, Search,
+    MessageCircle, CheckCircle, Camera, Star, ShieldCheck,
+} from 'lucide-react';
+
 interface Props {
     featured: Car[];
     makes: Make[];
@@ -12,12 +16,12 @@ interface Props {
 }
 
 const BODY_TYPES = [
-    { value: 'sedan',     label: 'Sedan' },
-    { value: 'suv',       label: 'SUV' },
-    { value: 'pickup',    label: 'Pickup Truck' },
-    { value: 'coupe',     label: 'Coupe' },
-    { value: 'hatchback', label: 'Hatchback' },
-    { value: 'van',       label: 'Van' },
+    { value: 'sedan',     label: 'Sedan',        Icon: CarIcon,   bg: 'bg-blue-50',   icon: 'text-blue-500' },
+    { value: 'suv',       label: 'SUV',           Icon: Truck,     bg: 'bg-green-50',  icon: 'text-green-500' },
+    { value: 'pickup',    label: 'Pickup',         Icon: Truck,     bg: 'bg-yellow-50', icon: 'text-yellow-600' },
+    { value: 'coupe',     label: 'Coupe',          Icon: CarFront,  bg: 'bg-purple-50', icon: 'text-purple-500' },
+    { value: 'hatchback', label: 'Hatchback',      Icon: CarIcon,   bg: 'bg-pink-50',   icon: 'text-pink-500' },
+    { value: 'van',       label: 'Van',            Icon: Truck,     bg: 'bg-orange-50', icon: 'text-orange-500' },
 ];
 
 const FUEL_TYPES = [
@@ -27,55 +31,45 @@ const FUEL_TYPES = [
     { value: 'hybrid',   label: 'Hybrid' },
 ];
 
-function CarIllustration() {
+const HOW_IT_WORKS = [
+    { step: '01', Icon: Camera,        title: 'List your car',      desc: 'Create a free listing in minutes. Add photos, specs and your price.' },
+    { step: '02', Icon: MessageCircle, title: 'Get contacted',      desc: 'Interested buyers reach out directly. No middleman, no commissions.' },
+    { step: '03', Icon: CheckCircle,   title: 'Close the deal',     desc: 'Meet the buyer, hand over the keys and get paid on your terms.' },
+];
+
+function BrandCard({ make, onSelect }: { make: Make; onSelect: () => void }) {
+    const [src, setSrc] = useState(`/images/brands/${make.slug}.png`);
+    const [failed, setFailed] = useState(false);
+
+    function handleError() {
+        if (src.endsWith('.png')) {
+            setSrc(`/images/brands/${make.slug}.svg`);
+        } else {
+            setFailed(true);
+        }
+    }
+
     return (
-        <svg viewBox="0 0 520 230" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-lg">
-            <ellipse cx="260" cy="218" rx="200" ry="10" fill="rgba(0,0,0,0.12)" />
-            {/* Body */}
-            <rect x="30" y="125" width="460" height="72" rx="14" fill="white" />
-            {/* Roof */}
-            <path d="M 110 125 L 148 62 L 372 62 L 410 125 Z" fill="white" />
-            {/* Front glass */}
-            <path d="M 152 120 L 162 70 L 248 70 L 248 120 Z" fill="#fed7aa" opacity="0.7" />
-            {/* Rear glass */}
-            <path d="M 272 120 L 272 70 L 360 70 L 368 120 Z" fill="#fed7aa" opacity="0.7" />
-            {/* Center pillar */}
-            <rect x="252" y="70" width="16" height="50" fill="white" />
-            {/* Body accent line */}
-            <line x1="35" y1="158" x2="485" y2="158" stroke="#f97316" strokeWidth="2.5" opacity="0.4" />
-            {/* Headlight */}
-            <rect x="468" y="130" width="22" height="20" rx="6" fill="#fef3c7" />
-            <rect x="470" y="133" width="18" height="7" rx="2" fill="#f59e0b" opacity="0.7" />
-            {/* Tail light */}
-            <rect x="30" y="130" width="18" height="20" rx="6" fill="#fecaca" />
-            {/* Grille */}
-            <rect x="470" y="158" width="22" height="22" rx="4" fill="#e5e7eb" />
-            <rect x="473" y="162" width="16" height="3" rx="1" fill="#9ca3af" />
-            <rect x="473" y="168" width="16" height="3" rx="1" fill="#9ca3af" />
-            <rect x="473" y="174" width="16" height="3" rx="1" fill="#9ca3af" />
-            {/* Front wheel */}
-            <circle cx="390" cy="197" r="36" fill="#1c1917" />
-            <circle cx="390" cy="197" r="24" fill="#44403c" />
-            <circle cx="390" cy="197" r="12" fill="#1c1917" />
-            <line x1="390" y1="173" x2="390" y2="197" stroke="#78716c" strokeWidth="3" />
-            <line x1="390" y1="197" x2="390" y2="221" stroke="#78716c" strokeWidth="3" />
-            <line x1="366" y1="197" x2="390" y2="197" stroke="#78716c" strokeWidth="3" />
-            <line x1="390" y1="197" x2="414" y2="197" stroke="#78716c" strokeWidth="3" />
-            {/* Rear wheel */}
-            <circle cx="130" cy="197" r="36" fill="#1c1917" />
-            <circle cx="130" cy="197" r="24" fill="#44403c" />
-            <circle cx="130" cy="197" r="12" fill="#1c1917" />
-            <line x1="130" y1="173" x2="130" y2="197" stroke="#78716c" strokeWidth="3" />
-            <line x1="130" y1="197" x2="130" y2="221" stroke="#78716c" strokeWidth="3" />
-            <line x1="106" y1="197" x2="130" y2="197" stroke="#78716c" strokeWidth="3" />
-            <line x1="130" y1="197" x2="154" y2="197" stroke="#78716c" strokeWidth="3" />
-            {/* Door handles */}
-            <rect x="310" y="152" width="26" height="7" rx="3.5" fill="#e5e7eb" />
-            <rect x="188" y="152" width="26" height="7" rx="3.5" fill="#e5e7eb" />
-            {/* Orange badge */}
-            <rect x="440" y="108" width="60" height="22" rx="11" fill="#f97316" />
-            <text x="470" y="123" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">AutoDive</text>
-        </svg>
+        <button
+            onClick={onSelect}
+            className="group flex flex-col items-center gap-2 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-orange-200 hover:shadow-md"
+        >
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden">
+                {failed ? (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-orange-600">
+                        {make.name.slice(0, 2).toUpperCase()}
+                    </div>
+                ) : (
+                    <img
+                        src={src}
+                        alt={make.name}
+                        className="h-full w-full object-contain"
+                        onError={handleError}
+                    />
+                )}
+            </div>
+            <span className="text-xs font-semibold text-gray-600 group-hover:text-orange-500">{make.name}</span>
+        </button>
     );
 }
 
@@ -103,38 +97,38 @@ export default function Welcome({ featured, makes }: Props) {
         <>
             <Head title="AutoDive — Buy & Sell Cars" />
 
-            {/* ─── Navbar ─────────────────────────────────────────────── */}
+            {/* ─── Navbar ──────────────────────────────────────────────── */}
             <header className="sticky top-0 z-50 border-b border-gray-100 bg-white shadow-sm">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-                    <Link href="/" className="text-xl font-extrabold tracking-tight text-orange-500">
-                        Auto<span className="text-gray-900">Dive</span>
-                        <CarFront className="inline-block w-6 h-6 ml-1 text-orange-500" />
-                        
+                    <Link href="/" className="flex items-center gap-1.5 text-xl font-extrabold tracking-tight">
+                        <span className="text-orange-500">Auto</span>
+                        <span className="text-gray-900">Dive</span>
+                        <CarFront className="h-5 w-5 text-orange-500" />
                     </Link>
                     <nav className="flex items-center gap-4">
-                        <Link href={cars.index()} className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
+                        <Link href={cars.index()} className="text-sm font-medium text-gray-600 transition-colors hover:text-orange-500">
                             Browse Cars
                         </Link>
                         {auth.user ? (
                             <>
                                 <Link
                                     href={cars.create()}
-                                    className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 transition-colors"
+                                    className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-orange-600"
                                 >
                                     + Add Listing
                                 </Link>
-                                <Link href="/dashboard" className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
+                                <Link href="/dashboard" className="text-sm font-medium text-gray-600 transition-colors hover:text-orange-500">
                                     Dashboard
                                 </Link>
                             </>
                         ) : (
                             <>
-                                <Link href={register()} className="text-sm font-medium text-gray-600 hover:text-orange-500 transition-colors">
+                                <Link href={register()} className="text-sm font-medium text-gray-600 transition-colors hover:text-orange-500">
                                     Sign up
                                 </Link>
                                 <Link
                                     href={login()}
-                                    className="rounded-lg border border-orange-500 px-4 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-50 transition-colors"
+                                    className="rounded-lg border border-orange-500 px-4 py-2 text-sm font-semibold text-orange-500 transition-colors hover:bg-orange-50"
                                 >
                                     Login
                                 </Link>
@@ -144,10 +138,11 @@ export default function Welcome({ featured, makes }: Props) {
                 </div>
             </header>
 
-            {/* ─── Hero ───────────────────────────────────────────────── */}
+            {/* ─── Hero ────────────────────────────────────────────────── */}
             <section className="bg-white py-14">
                 <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 md:grid-cols-2">
-                    {/* Left */}
+
+                    {/* Left — text */}
                     <div>
                         <span className="inline-block rounded-full bg-orange-100 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-orange-600">
                             #1 Car Marketplace
@@ -164,41 +159,52 @@ export default function Welcome({ featured, makes }: Props) {
                         <div className="mt-8 flex flex-wrap gap-3">
                             <Link
                                 href={cars.index()}
-                                className="rounded-lg bg-orange-500 px-8 py-3 font-semibold text-white shadow-md hover:bg-orange-600 transition-colors"
+                                className="rounded-lg bg-orange-500 px-8 py-3 font-semibold text-white shadow-md transition-colors hover:bg-orange-600"
                             >
                                 Find the car
                             </Link>
                             <Link
                                 href={auth.user ? cars.create() : register()}
-                                className="rounded-lg border-2 border-orange-500 px-8 py-3 font-semibold text-orange-500 hover:bg-orange-50 transition-colors"
+                                className="rounded-lg border-2 border-orange-500 px-8 py-3 font-semibold text-orange-500 transition-colors hover:bg-orange-50"
                             >
                                 Sell your car
                             </Link>
                         </div>
-                        {/* Trust badges */}
                         <div className="mt-8 flex flex-wrap gap-6 text-sm text-gray-400">
-                            <span className="flex items-center gap-1.5">
-                                <svg className="h-4 w-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
-                                Free to list
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                                <svg className="h-4 w-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
-                                Direct contact
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                                <svg className="h-4 w-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
-                                {makes.length}+ brands
-                            </span>
+                            {[
+                                { Icon: ShieldCheck, text: 'Free to list' },
+                                { Icon: MessageCircle, text: 'Direct contact' },
+                                { Icon: Star, text: `${makes.length}+ brands` },
+                            ].map(({ Icon, text }) => (
+                                <span key={text} className="flex items-center gap-1.5">
+                                    <Icon className="h-4 w-4 text-orange-400" />
+                                    {text}
+                                </span>
+                            ))}
                         </div>
                     </div>
-                    {/* Right */}
-                    <div className="hidden justify-center md:flex">
-                        <CarIllustration />
+
+                    {/* Right — real photo */}
+                    <div className="hidden md:block">
+                        <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                            <img
+                                src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80"
+                                alt="Featured car"
+                                className="h-105 w-full object-cover"
+                            />
+                            {/* gradient overlay */}
+                            <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent" />
+                            {/* badge */}
+                            <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-xl bg-white/90 px-4 py-2 shadow-md backdrop-blur-sm">
+                                <Zap className="h-4 w-4 text-orange-500" />
+                                <span className="text-sm font-semibold text-gray-800">27 cars available now</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* ─── Search panel ───────────────────────────────────────── */}
+            {/* ─── Search panel ────────────────────────────────────────── */}
             <section className="border-y border-gray-100 bg-gray-50">
                 <div className="mx-auto max-w-7xl px-4 py-6">
                     <form onSubmit={handleSearch}>
@@ -264,14 +270,15 @@ export default function Welcome({ featured, makes }: Props) {
                             <div className="flex gap-2 pb-0.5">
                                 <button
                                     type="submit"
-                                    className="rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300"
+                                    className="flex items-center gap-2 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-300"
                                 >
+                                    <Search className="h-4 w-4" />
                                     Search
                                 </button>
                                 <button
                                     type="button"
                                     onClick={handleReset}
-                                    className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors focus:outline-none"
+                                    className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50 focus:outline-none"
                                 >
                                     Reset
                                 </button>
@@ -281,37 +288,123 @@ export default function Welcome({ featured, makes }: Props) {
                 </div>
             </section>
 
-            {/* ─── Sell your car ──────────────────────────────────────── */}
+            {/* ─── Browse by category ──────────────────────────────────── */}
             <section className="bg-white py-14">
                 <div className="mx-auto max-w-7xl px-4">
-                    <div className="flex flex-col items-center justify-between gap-6 overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 px-8 py-10 shadow-lg md:flex-row">
-                        <div className="text-white">
-                            <h2 className="text-2xl font-extrabold">
-                                Do you want to sell your car?
-                            </h2>
-                            <p className="mt-2 max-w-lg text-orange-100">
-                                Post a free listing in minutes and reach thousands of buyers in your region. No commission, no fees.
-                            </p>
-                        </div>
-                        <Link
-                            href={auth.user ? cars.create() : register()}
-                            className="shrink-0 rounded-xl bg-white px-8 py-3 font-semibold text-orange-600 shadow-md hover:bg-orange-50 transition-colors"
-                        >
-                            Add Your Car →
-                        </Link>
+                    <div className="mb-8 text-center">
+                        <h2 className="text-2xl font-bold text-gray-900">Browse by Category</h2>
+                        <p className="mt-1 text-sm text-gray-400">Find the body type that suits your lifestyle</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+                        {BODY_TYPES.map(({ value, label, Icon, bg, icon }) => (
+                            <button
+                                key={value}
+                                onClick={() => router.get(cars.index(), { body_type: value }, { preserveState: false })}
+                                className="group flex flex-col items-center gap-3 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-orange-200 hover:shadow-md"
+                            >
+                                <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${bg} transition-transform group-hover:scale-110`}>
+                                    <Icon className={`h-7 w-7 ${icon}`} />
+                                </div>
+                                <span className="text-sm font-semibold text-gray-700 group-hover:text-orange-500">{label}</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* ─── Latest listings ────────────────────────────────────── */}
-            <main className="bg-gray-50 py-14">
+            {/* ─── Stats bar ───────────────────────────────────────────── */}
+            <section className="bg-orange-500 py-10">
+                <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 text-center text-white sm:grid-cols-4">
+                    {[
+                        { value: `${featured.length > 0 ? '27+' : '0'}`, label: 'Active Listings' },
+                        { value: `${makes.length}`,                       label: 'Car Brands' },
+                        { value: '100%',                                   label: 'Free to List' },
+                        { value: '0%',                                     label: 'Commission' },
+                    ].map(stat => (
+                        <div key={stat.label}>
+                            <p className="text-3xl font-extrabold">{stat.value}</p>
+                            <p className="mt-1 text-sm text-orange-100">{stat.label}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* ─── How it works ────────────────────────────────────────── */}
+            <section className="bg-gray-50 py-14">
+                <div className="mx-auto max-w-7xl px-4">
+                    <div className="mb-10 text-center">
+                        <h2 className="text-2xl font-bold text-gray-900">How It Works</h2>
+                        <p className="mt-1 text-sm text-gray-400">Sell your car in 3 simple steps</p>
+                    </div>
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+                        {HOW_IT_WORKS.map(({ step, Icon, title, desc }) => (
+                            <div key={step} className="relative flex flex-col items-center rounded-2xl bg-white p-8 text-center shadow-sm">
+                                <span className="absolute -top-4 rounded-full bg-orange-500 px-3 py-1 text-xs font-bold text-white">
+                                    {step}
+                                </span>
+                                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-50">
+                                    <Icon className="h-8 w-8 text-orange-500" />
+                                </div>
+                                <h3 className="mt-4 text-lg font-bold text-gray-900">{title}</h3>
+                                <p className="mt-2 text-sm leading-relaxed text-gray-500">{desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ─── Popular brands ──────────────────────────────────────── */}
+            <section className="bg-white py-14">
+                <div className="mx-auto max-w-7xl px-4">
+                    <div className="mb-8 text-center">
+                        <h2 className="text-2xl font-bold text-gray-900">Popular Brands</h2>
+                        <p className="mt-1 text-sm text-gray-400">Browse by manufacturer</p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 sm:grid-cols-5 lg:grid-cols-8">
+                        {makes.map(make => (
+                            <BrandCard key={make.id} make={make} onSelect={() =>
+                                router.get(cars.index(), { make_id: String(make.id) }, { preserveState: false })
+                            } />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ─── Sell your car banner ────────────────────────────────── */}
+            <section className="bg-gray-50 py-14">
+                <div className="mx-auto max-w-7xl px-4">
+                    <div className="relative overflow-hidden rounded-2xl bg-linear-to-r from-orange-500 to-amber-500 shadow-lg">
+                        {/* background pattern */}
+                        <div className="absolute inset-0 opacity-10" style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                        }} />
+                        <div className="relative flex flex-col items-center justify-between gap-6 px-8 py-12 text-white md:flex-row">
+                            <div>
+                                <h2 className="text-2xl font-extrabold">Do you want to sell your car?</h2>
+                                <p className="mt-2 max-w-lg text-orange-100">
+                                    Post a free listing in minutes and reach thousands of buyers in your region. No commission, no fees.
+                                </p>
+                            </div>
+                            <Link
+                                href={auth.user ? cars.create() : register()}
+                                className="shrink-0 rounded-xl bg-white px-8 py-3 font-semibold text-orange-600 shadow-md transition-colors hover:bg-orange-50"
+                            >
+                                Add Your Car →
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ─── Latest listings ─────────────────────────────────────── */}
+            <main className="bg-white py-14">
                 <div className="mx-auto max-w-7xl px-4">
                     <div className="mb-8 flex items-center justify-between">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-900">Latest Added Cars</h2>
                             <p className="mt-1 text-sm text-gray-400">Fresh listings from sellers near you</p>
                         </div>
-                        <Link href={cars.index()} className="text-sm font-semibold text-orange-500 hover:text-orange-600 hover:underline">
+                        <Link href={cars.index()} className="text-sm font-semibold text-orange-500 hover:underline">
                             View all →
                         </Link>
                     </div>
@@ -323,16 +416,13 @@ export default function Welcome({ featured, makes }: Props) {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center rounded-2xl border-2 border-dashed border-gray-200 bg-white py-20 text-gray-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="mb-4 h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h10l2-2v-4" />
-                            </svg>
+                        <div className="flex flex-col items-center rounded-2xl border-2 border-dashed border-gray-200 py-20 text-gray-400">
+                            <CarIcon className="mb-4 h-16 w-16 text-gray-300" />
                             <p className="text-lg font-medium text-gray-500">No listings yet</p>
                             <p className="mt-1 text-sm">Be the first to post a car for sale!</p>
                             <Link
                                 href={auth.user ? cars.create() : register()}
-                                className="mt-6 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 transition-colors"
+                                className="mt-6 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
                             >
                                 {auth.user ? 'Post your car' : 'Sign up to sell'}
                             </Link>
@@ -341,12 +431,25 @@ export default function Welcome({ featured, makes }: Props) {
                 </div>
             </main>
 
-            {/* ─── Footer ─────────────────────────────────────────────── */}
-            <footer className="border-t border-gray-100 bg-white py-8 text-center text-sm text-gray-400">
-                © {new Date().getFullYear()}{' '}
-                <span className="font-semibold text-orange-500">Auto</span>
-                <span className="font-semibold text-gray-700">Dive</span>
-                . All rights reserved.
+            {/* ─── Footer ──────────────────────────────────────────────── */}
+            <footer className="border-t border-gray-100 bg-white py-10">
+                <div className="mx-auto max-w-7xl px-4">
+                    <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                        <Link href="/" className="flex items-center gap-1.5 text-lg font-extrabold">
+                            <span className="text-orange-500">Auto</span>
+                            <span className="text-gray-900">Dive</span>
+                            <CarFront className="h-5 w-5 text-orange-500" />
+                        </Link>
+                        <div className="flex gap-6 text-sm text-gray-400">
+                            <Link href={cars.index()} className="hover:text-orange-500">Browse</Link>
+                            <Link href={auth.user ? cars.create() : register()} className="hover:text-orange-500">Sell</Link>
+                            <Link href={login()} className="hover:text-orange-500">Login</Link>
+                        </div>
+                        <p className="text-sm text-gray-400">
+                            © {new Date().getFullYear()} AutoDive. All rights reserved.
+                        </p>
+                    </div>
+                </div>
             </footer>
         </>
     );
